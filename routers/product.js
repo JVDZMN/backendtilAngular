@@ -1,18 +1,34 @@
 const express = require('express')
+const fs = require('fs')
 const Category = require('../models/category')
 const Product=require('../models/product')
 const router=express.Router()
 const mongoose = require('mongoose')
 const multer = require('multer')
+const path=require('path')
 
+const fileTypes = {
+    'image/png':'png',
+    'image/jpeg':'jpeg',
+    'image/jpg':'jpg'
+}
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, '/uploads/imgs')
+        const isValid = fileTypes[file.mimetype]
+        let uploadError = new Error('invalid image type')
+        if(isValid){
+            uploadError = null
+        }
+      cb(uploadError, path.join(__dirname, '/uploads/imgs/') )
     },
     filename: function (req, file, cb) {
+
       const filename = file.originalname.split(' ').join('-')  
-      cb(null, filename + '-' + Date.now())
+      const extension = fileTypes[file.mimetype]
+      const now = Date.now().toString()
+      
+      cb(null, `${filename}-${now.replace(/:/g, '-')}.${extension}`)
     }
 })
 
@@ -31,11 +47,15 @@ router.post('/',uploadOptions.single('image'),async(req,res,next)=>{
             error: err
         })
     })
+    const fileName = req.file.filename
+    console.log(fileName)
+    const basePath = `${req.protocol}://${req.get('host')}/uploads/imgs/`
+    console.log(basePath)
     const product= new Product({
         name:req.body.name,
         description : req.body.description,
         ricDescription : req.body.ricDescription,
-        image:req.body.image,
+        image:`${basePath}${fileName}`,
         brand:req.body.brand,
         price:req.body.price,
         category:req.body.category,

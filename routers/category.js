@@ -39,10 +39,10 @@ router.post('/', async(req, res)=>{
         color:req.body.color
     })
 
-    categoryAdded.save().then(res =>{
+    categoryAdded.save().then(cat =>{
         res.status(201).json({
             message:'category added sucessfully from res',
-            category:res
+            categoryId:cat._id
         })
     }).catch(err =>{
         res.status(500).json({
