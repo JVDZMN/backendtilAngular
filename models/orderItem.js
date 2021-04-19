@@ -11,6 +11,10 @@ const orderItemsSchema=mongoose.Schema({
     }
 })
 
+orderItemsSchema.virtual('id').get(function(){
+    return this._id.toHexString()
+})
+
 
 
 module.exports = mongoose.model('orderItems',orderItemsSchema)

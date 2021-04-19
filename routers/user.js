@@ -6,6 +6,7 @@ const bcryptjs = require('bcryptjs')
 const jwt =require('jsonwebtoken')
 
 //add new user
+//http://localhost:3000/api/users/register POST
 router.post('/',async(req,res,next)=>{
     const user= new User({
         name:req.body.name,
@@ -30,7 +31,7 @@ router.post('/',async(req,res,next)=>{
         if(!resUser){
             return res.status(500).send('user cannot be added')
         }else {
-            return res.send(resUser)
+            return res.status(200).send({user : resUser})
         }
     }).catch(err => {
         res.status(500).json({
@@ -46,6 +47,7 @@ router.post('/',async(req,res,next)=>{
 })
 
 //get all users
+//http://localhost:3000/api/users GET
 router.get('/',async (req,res)=>{
     const userList= await User.find().select('-passwordHash')
     if(!userList){
@@ -58,7 +60,8 @@ router.get('/',async (req,res)=>{
         })
     }
 });
-//get User by id
+//get User by id 
+//http://localhost:3000/api/users/id GET
 router.get('/:id',async (req,res)=>{
     const userById= await User.findById(req.params.id)
     if(!userById){
@@ -72,7 +75,8 @@ router.get('/:id',async (req,res)=>{
     }
 });
 
-//delete a user
+//delete a user 
+//http://localhost:3000/api/users DELETE
 router.delete('/:id',(req, res)=>{
     User.findByIdAndRemove(req.params.id).then(user =>{
         if(user){
@@ -93,11 +97,13 @@ router.delete('/:id',(req, res)=>{
         })
     })
 })
+//LOGIN
+// http://localhost:3000/api/users/login POST
 router.post('/login',async (req,res)=>{
    const user = await User.findOne({email : req.body.email})
    const secret = process.env.SECRET
    if(!user){
-       return res.status(400).send('The user not found')
+       return res.status(200).send({message:'The user not found'})
    }
    if(user && bcryptjs.compareSync(req.body.password,user.passwordHash)){
 
@@ -111,9 +117,9 @@ router.post('/login',async (req,res)=>{
                expiresIn:'1d'
            }
        )
-       res.status(200).send({user:user.email,token : token})
+       res.status(200).send({message:'token',user:user.email,token : token})
    } else{
-       res.status(404).send('pass is wrong')
+       res.status(200).send({message:'pass is wrong'})
    }
 })
 

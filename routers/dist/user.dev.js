@@ -12,7 +12,9 @@ var mongoose = require('mongoose');
 
 var bcryptjs = require('bcryptjs');
 
-var jwt = require('jsonwebtoken');
+var jwt = require('jsonwebtoken'); //add new user
+//http://localhost:3000/api/users/register POST
+
 
 router.post('/', function _callee(req, res, next) {
   var user;
@@ -49,7 +51,9 @@ router.post('/', function _callee(req, res, next) {
             if (!resUser) {
               return res.status(500).send('user cannot be added');
             } else {
-              return res.send(resUser);
+              return res.status(200).send({
+                user: resUser
+              });
             }
           })["catch"](function (err) {
             res.status(500).json({
@@ -71,6 +75,7 @@ router.post('/', function _callee(req, res, next) {
     }
   });
 }); //get all users
+//http://localhost:3000/api/users GET
 
 router.get('/', function _callee2(req, res) {
   var userList;
@@ -101,7 +106,8 @@ router.get('/', function _callee2(req, res) {
       }
     }
   });
-}); //get User by id
+}); //get User by id 
+//http://localhost:3000/api/users/id GET
 
 router.get('/:id', function _callee3(req, res) {
   var userById;
@@ -133,7 +139,8 @@ router.get('/:id', function _callee3(req, res) {
       }
     }
   });
-}); //delete a product
+}); //delete a user 
+//http://localhost:3000/api/users DELETE
 
 router["delete"]('/:id', function (req, res) {
   User.findByIdAndRemove(req.params.id).then(function (user) {
@@ -154,7 +161,9 @@ router["delete"]('/:id', function (req, res) {
       error: err
     });
   });
-});
+}); //LOGIN
+// http://localhost:3000/api/users/login POST
+
 router.post('/login', function _callee4(req, res) {
   var user, secret, token;
   return regeneratorRuntime.async(function _callee4$(_context4) {
@@ -168,31 +177,39 @@ router.post('/login', function _callee4(req, res) {
 
         case 2:
           user = _context4.sent;
+          secret = process.env.SECRET;
 
           if (user) {
-            _context4.next = 5;
+            _context4.next = 6;
             break;
           }
 
-          return _context4.abrupt("return", res.status(400).send('The user not found'));
+          return _context4.abrupt("return", res.status(200).send({
+            message: 'The user not found'
+          }));
 
-        case 5:
+        case 6:
           if (user && bcryptjs.compareSync(req.body.password, user.passwordHash)) {
-            secret = "Javad,Asim og Anthon";
             token = jwt.sign({
-              userId: user.id
+              userId: user.id,
+              isAdmin: user.isAdmin
             }, secret, {
+              algorithm: 'HS256'
+            }, {
               expiresIn: '1d'
             });
             res.status(200).send({
+              message: 'token',
               user: user.email,
               token: token
             });
           } else {
-            res.status(404).send('pass is wrong');
+            res.status(200).send({
+              message: 'pass is wrong'
+            });
           }
 
-        case 6:
+        case 7:
         case "end":
           return _context4.stop();
       }

@@ -3,9 +3,20 @@
 var mongoose = require('mongoose');
 
 var userSchema = mongoose.Schema({
-  name: {
+  firstname: {
     type: String,
     required: true
+  },
+  lastname: {
+    type: String,
+    required: true
+  },
+  username: {
+    type: String,
+    required: true
+  },
+  birthday: {
+    type: Date
   },
   email: {
     type: String,
@@ -33,8 +44,11 @@ var userSchema = mongoose.Schema({
     type: String
   },
   phone: {
+    type: String
+  },
+  token: {
     type: String,
-    required: true
+    "default": ''
   },
   isAdmin: {
     type: Boolean,
@@ -45,6 +59,6 @@ userSchema.virtual('id').get(function () {
   return this._id.toHexString();
 });
 userSchema.set('toJSON', {
-  virtual: true
+  virtuals: true
 });
 module.exports = mongoose.model('Users', userSchema);

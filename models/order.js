@@ -6,8 +6,7 @@ const orderSchema=mongoose.Schema({
         required:true
     }],
     shippingAddress1:{
-        type:String,
-        required: true
+        type:String
     },
     shippingAddress2:{
         type:String
