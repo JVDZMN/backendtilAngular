@@ -4,14 +4,46 @@ function _readOnlyError(name) { throw new Error("\"" + name + "\" is read-only")
 
 var express = require('express');
 
+var fs = require('fs');
+
 var Category = require('../models/category');
 
 var Product = require('../models/product');
 
 var router = express.Router();
 
-var mongoose = require('mongoose'); //add a product
+var mongoose = require('mongoose');
 
+var multer = require('multer');
+
+var path = require('path');
+
+var fileTypes = {
+  'image/png': 'png',
+  'image/jpeg': 'jpeg',
+  'image/jpg': 'jpg'
+};
+var storage = multer.diskStorage({
+  destination: function destination(req, file, cb) {
+    var isValid = fileTypes[file.mimetype];
+    var uploadError = new Error('invalid image type');
+
+    if (isValid) {
+      uploadError = null;
+    }
+
+    cb(uploadError, path.join(__dirname, '/uploads/imgs/'));
+  },
+  filename: function filename(req, file, cb) {
+    var filename = file.originalname.split(' ').join('-');
+    var extension = fileTypes[file.mimetype];
+    var now = Date.now().toString();
+    cb(null, "".concat(filename, "-").concat(now.replace(/:/g, '-'), ".").concat(extension));
+  }
+});
+var uploadOptions = multer({
+  storage: storage
+}); //add a product
 
 router.post('/', function _callee(req, res, next) {
   var category, product;
@@ -32,6 +64,10 @@ router.post('/', function _callee(req, res, next) {
 
         case 2:
           category = _context.sent;
+          //const fileName = req.file.filename
+          //console.log(fileName)
+          //const basePath = `${req.protocol}://${req.get('host')}/uploads/imgs/`
+          //console.log(basePath)
           product = new Product({
             name: req.body.name,
             description: req.body.description,

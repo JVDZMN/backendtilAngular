@@ -37,7 +37,7 @@ const uploadOptions = multer({storage : storage})
 
 
 //add a product
-router.post('/',uploadOptions.single('image'),async(req,res,next)=>{
+router.post('/',async(req,res,next)=>{
     const category = await Category.findById(req.body.category).then(category =>{
         if(!category){
             return res.status(500).send('invalid category ')
@@ -47,15 +47,16 @@ router.post('/',uploadOptions.single('image'),async(req,res,next)=>{
             error: err
         })
     })
-    const fileName = req.file.filename
-    console.log(fileName)
-    const basePath = `${req.protocol}://${req.get('host')}/uploads/imgs/`
-    console.log(basePath)
+    //const fileName = req.file.filename
+    //console.log(fileName)
+    
+    //const basePath = `${req.protocol}://${req.get('host')}/uploads/imgs/`
+    //console.log(basePath)
     const product= new Product({
         name:req.body.name,
         description : req.body.description,
         ricDescription : req.body.ricDescription,
-        image:`${basePath}${fileName}`,
+        image: req.body.image,
         brand:req.body.brand,
         price:req.body.price,
         category:req.body.category,
