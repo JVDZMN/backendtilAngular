@@ -1,7 +1,5 @@
 "use strict";
 
-function _readOnlyError(name) { throw new Error("\"" + name + "\" is read-only"); }
-
 var express = require('express');
 
 var fs = require('fs');
@@ -18,21 +16,28 @@ var multer = require('multer');
 
 var path = require('path');
 
+var _require = require('../models/category'),
+    updateOne = _require.updateOne;
+
 var fileTypes = {
   'image/png': 'png',
   'image/jpeg': 'jpeg',
   'image/jpg': 'jpg'
 };
+
+var fileFilter = function fileFilter(req, file, cb) {
+  var isValid = fileTypes[file.mimetype];
+
+  if (isValid) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 var storage = multer.diskStorage({
   destination: function destination(req, file, cb) {
-    var isValid = fileTypes[file.mimetype];
-    var uploadError = new Error('invalid image type');
-
-    if (isValid) {
-      uploadError = null;
-    }
-
-    cb(uploadError, path.join(__dirname, '/uploads/imgs/'));
+    cb(null, 'uploads/');
   },
   filename: function filename(req, file, cb) {
     var filename = file.originalname.split(' ').join('-');
@@ -41,38 +46,46 @@ var storage = multer.diskStorage({
     cb(null, "".concat(filename, "-").concat(now.replace(/:/g, '-'), ".").concat(extension));
   }
 });
-var uploadOptions = multer({
-  storage: storage
+var upload = multer({
+  storage: storage,
+  fileFilter: fileFilter
 }); //add a product
 
-router.post('/', function _callee(req, res, next) {
-  var category, product;
+router.post('/', upload.single('image'), function _callee(req, res, next) {
+  var filename, originalPath, category;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
+          if (req.file) {
+            _context.next = 2;
+            break;
+          }
+
+          return _context.abrupt("return", res.status(400).send('insert an image for product'));
+
+        case 2:
+          //make a path for public path for image from root
+          filename = req.file.filename;
+          originalPath = "".concat(req.protocol, "://").concat(req.get('host'), "/uploads");
+          console.log("req.file : ");
+          console.log(req.file);
+          _context.next = 8;
           return regeneratorRuntime.awrap(Category.findById(req.body.category).then(function (category) {
             if (!category) {
               return res.status(500).send('invalid category ');
             }
           })["catch"](function (err) {
-            res.status(500).json({
-              error: err
-            });
+            console.log(err);
           }));
 
-        case 2:
+        case 8:
           category = _context.sent;
-          //const fileName = req.file.filename
-          //console.log(fileName)
-          //const basePath = `${req.protocol}://${req.get('host')}/uploads/imgs/`
-          //console.log(basePath)
           product = new Product({
             name: req.body.name,
             description: req.body.description,
-            ricDescription: req.body.ricDescription,
-            image: req.body.image,
+            richDescription: req.body.richDescription,
+            image: "".concat(originalPath, "/").concat(filename),
             brand: req.body.brand,
             price: req.body.price,
             category: req.body.category,
@@ -81,10 +94,7 @@ router.post('/', function _callee(req, res, next) {
             numReviews: req.body.numReviews,
             isFeatured: req.body.isFeatured
           });
-
-          _readOnlyError("product");
-
-          _context.next = 7;
+          _context.next = 12;
           return regeneratorRuntime.awrap(product.save().then(function (product) {
             if (!product) {
               return res.status(500).send('product cannot be added');
@@ -92,15 +102,13 @@ router.post('/', function _callee(req, res, next) {
               return res.send(product);
             }
           })["catch"](function (err) {
-            res.status(500).json({
-              error: err
-            });
+            console.log(err);
           }));
 
-        case 7:
+        case 12:
           product = _context.sent;
 
-        case 8:
+        case 13:
         case "end":
           return _context.stop();
       }
@@ -114,10 +122,12 @@ router.get('/', function _callee2(req, res) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          _context2.next = 2;
+          console.log(" req : ");
+          console.log(req.body);
+          _context2.next = 4;
           return regeneratorRuntime.awrap(Product.find().populate('category'));
 
-        case 2:
+        case 4:
           productList = _context2.sent;
 
           if (!productList) {
@@ -131,7 +141,7 @@ router.get('/', function _callee2(req, res) {
             });
           }
 
-        case 4:
+        case 6:
         case "end":
           return _context2.stop();
       }
@@ -170,7 +180,7 @@ router.get('/:id', function _callee3(req, res) {
   });
 }); //updating product
 
-router.put('/:id', function _callee4(req, res) {
+router.put('/:id', upload.single('image'), function _callee4(req, res) {
   var category, product;
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
@@ -198,6 +208,20 @@ router.put('/:id', function _callee4(req, res) {
         case 4:
           category = _context4.sent;
           _context4.next = 7;
+          return regeneratorRuntime.awrap(Product.findById(req.params.id));
+
+        case 7:
+          pro = _context4.sent;
+
+          if (pro) {
+            _context4.next = 10;
+            break;
+          }
+
+          return _context4.abrupt("return", res.status(400).send('not a valid product'));
+
+        case 10:
+          _context4.next = 12;
           return regeneratorRuntime.awrap(Product.findByIdAndUpdate(req.params.id, {
             name: req.body.name,
             description: req.body.description,
@@ -231,10 +255,10 @@ router.put('/:id', function _callee4(req, res) {
             });
           }));
 
-        case 7:
+        case 12:
           product = _context4.sent;
 
-        case 8:
+        case 13:
         case "end":
           return _context4.stop();
       }
@@ -327,6 +351,65 @@ router.get('/', function _callee6(req, res) {
         case 7:
         case "end":
           return _context6.stop();
+      }
+    }
+  });
+});
+router.put('/images-list/:id', upload.array('images', 7), function _callee7(req, res) {
+  var originalPath, imgPaths, product;
+  return regeneratorRuntime.async(function _callee7$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          if (mongoose.isValidObjectId(req.params.id)) {
+            _context7.next = 2;
+            break;
+          }
+
+          return _context7.abrupt("return", res.status(500).send('invalid productId '));
+
+        case 2:
+          files = req.files;
+
+          if (!files) {
+            res.status(400).send('insert the images');
+          }
+
+          originalPath = "".concat(req.protocol, "://").concat(req.get('host'), "/uploads");
+          imgPaths = [];
+          files.map(function (file) {
+            imgPaths.push("".concat(originalPath, "/").concat(file.filename));
+          });
+          _context7.next = 9;
+          return regeneratorRuntime.awrap(Product.findOneAndUpdate(req.params.id, {
+            images: imgPaths
+          }, {
+            "new": true
+          }).then(function (product) {
+            if (product) {
+              return res.status(200).json({
+                success: true,
+                message: 'the product updated',
+                product: product
+              });
+            } else {
+              return res.status(404).json({
+                success: false,
+                message: 'the product not updated'
+              });
+            }
+          })["catch"](function (err) {
+            res.status(500).json({
+              error: err
+            });
+          }));
+
+        case 9:
+          product = _context7.sent;
+
+        case 10:
+        case "end":
+          return _context7.stop();
       }
     }
   });

@@ -2,6 +2,8 @@
 
 var express = require('express');
 
+var path = require('path');
+
 require('dotenv').config();
 
 var app = express();
@@ -23,13 +25,19 @@ var errorHandler = require('./helper/error-handler');
 app.use(cors());
 app.options('*', cors()); //To handle HTTP POST requests(middlewares)
 
+app.use(bodyParser());
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(morgan('tiny')); //app.use(authJwt())
 
-app.use(errorHandler); //models
+app.use(errorHandler);
+app.use("/uploads", express["static"](path.join(__dirname, "uploads"))); //models
 
 var Post = require('./models/post');
 

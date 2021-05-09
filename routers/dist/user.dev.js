@@ -22,8 +22,12 @@ router.post('/', function _callee(req, res, next) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
+          console.log(req.body);
           user = new User({
-            name: req.body.name,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            username: req.body.username,
+            token: req.body.token,
             email: req.body.email,
             passwordHash: bcryptjs.hashSync(req.body.password, 10),
             street: req.body.street,
@@ -46,7 +50,7 @@ router.post('/', function _callee(req, res, next) {
 
           _readOnlyError("user");
 
-          _context.next = 5;
+          _context.next = 6;
           return regeneratorRuntime.awrap(user.save().then(function (resUser) {
             if (!resUser) {
               return res.status(500).send('user cannot be added');
@@ -59,16 +63,12 @@ router.post('/', function _callee(req, res, next) {
             res.status(500).json({
               error: err
             });
-          })["catch"](function (err) {
-            res.status(500).json({
-              error: err
-            });
           }));
 
-        case 5:
+        case 6:
           user = _context.sent;
 
-        case 6:
+        case 7:
         case "end":
           return _context.stop();
       }
