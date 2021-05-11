@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e976fa70-16cb-4603-95ec-c9d884537274" name="Default Changelist" comment="Test virker igen">
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+    <list default="true" id="e976fa70-16cb-4603-95ec-c9d884537274" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/cat.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/dist/catTest.dev.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/dist/netTest.dev.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/dist/newtest.dev.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/new.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/task.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/task.test.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
