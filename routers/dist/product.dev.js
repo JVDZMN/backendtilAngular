@@ -49,7 +49,7 @@ var upload = multer({
 }); //add a product
 
 router.post('/', upload.single('image'), function _callee(req, res, next) {
-  var filename, originalPath, category, userAdded;
+  var filename, originalPath, category, proAdded;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -80,7 +80,7 @@ router.post('/', upload.single('image'), function _callee(req, res, next) {
 
         case 8:
           category = _context.sent;
-          userAdded = new User({
+          proAdded = new Product({
             name: req.body.name,
             description: req.body.description,
             richDescription: req.body.richDescription,
@@ -93,9 +93,9 @@ router.post('/', upload.single('image'), function _callee(req, res, next) {
             numReviews: req.body.numReviews,
             isFeatured: req.body.isFeatured
           });
-          userAdded.save().then(function (user) {
+          proAdded.save().then(function (user) {
             res.status(201).json({
-              message: 'category added sucessfully from res',
+              message: 'product added sucessfully from res',
               email: user.email
             });
           })["catch"](function (err) {

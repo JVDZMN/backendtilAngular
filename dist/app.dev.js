@@ -34,8 +34,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
-app.use(morgan('tiny'));
-app.use(authJwt());
+app.use(morgan('tiny')); //app.use(authJwt())
+
 app.use(errorHandler);
 app.use("/uploads", express["static"](path.join(__dirname, "uploads"))); //models
 

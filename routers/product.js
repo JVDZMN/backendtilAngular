@@ -57,7 +57,7 @@ router.post('/',upload.single('image'),async(req,res,next)=>{
         console.log(err)
     }) 
 
-    const userAdded= new User({
+    const proAdded= new Product({
         name:req.body.name,
         description : req.body.description,
         richDescription : req.body.richDescription,
@@ -71,9 +71,9 @@ router.post('/',upload.single('image'),async(req,res,next)=>{
         isFeatured:req.body.isFeatured
     })
 
-    userAdded.save().then(user =>{
+    proAdded.save().then(user =>{
         res.status(201).json({
-            message:'category added sucessfully from res',
+            message:'product added sucessfully from res',
             email :user.email
         })
     }).catch(err =>{
