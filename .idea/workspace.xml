@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e976fa70-16cb-4603-95ec-c9d884537274" name="Default Changelist" comment="Test virker igen" />
+    <list default="true" id="e976fa70-16cb-4603-95ec-c9d884537274" name="Default Changelist" comment="Test virker igen">
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -10,7 +12,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="jvd" />
+        <entry key="$PROJECT_DIR$" value="jvdTest" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -62,6 +64,7 @@
       <workItem from="1620756841217" duration="570000" />
       <workItem from="1620757434344" duration="441000" />
       <workItem from="1620758327068" duration="384000" />
+      <workItem from="1620759002800" duration="341000" />
     </task>
     <task id="LOCAL-00001" summary="small changes">
       <created>1620737207164</created>
