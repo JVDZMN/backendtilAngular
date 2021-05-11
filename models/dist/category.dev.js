@@ -18,6 +18,6 @@ categorySchema.virtual('id').get(function () {
   return this._id.toHexString();
 });
 categorySchema.set('toJSON', {
-  virtual: true
+  virtuals: true
 });
 module.exports = mongoose.model('Categories', categorySchema);

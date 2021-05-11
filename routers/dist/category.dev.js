@@ -4,7 +4,43 @@ var Category = require('../models/category');
 
 var express = require('express');
 
-var router = express.Router(); //get all categories
+var router = express.Router();
+
+var multer = require('multer');
+
+var path = require('path');
+
+var fileTypes = {
+  'image/png': 'png',
+  'image/jpeg': 'jpeg',
+  'image/jpg': 'jpg'
+};
+
+var fileFilter = function fileFilter(req, file, cb) {
+  var isValid = fileTypes[file.mimetype];
+
+  if (isValid) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+var storage = multer.diskStorage({
+  destination: function destination(req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function filename(req, file, cb) {
+    var filename = file.originalname.split(' ').join('-');
+    var extension = fileTypes[file.mimetype];
+    var now = Date.now().toString();
+    cb(null, "".concat(filename, "-").concat(now.replace(/:/g, '-'), ".").concat(extension));
+  }
+});
+var upload = multer({
+  storage: storage,
+  fileFilter: fileFilter
+}); //get all categories
 
 router.get('/', function _callee(req, res) {
   var categoryList;
@@ -68,33 +104,37 @@ router.get('/:id', function _callee2(req, res) {
   });
 }); //create a category
 
-router.post('/', function _callee3(req, res) {
-  var categoryAdded;
+router.post('/', upload.single('image'), function _callee3(req, res, next) {
+  var filename, originalPath, categoryAdded;
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
+          //make a path for public path for image from root
+          filename = req.file.filename;
+          originalPath = "".concat(req.protocol, "://").concat(req.get('host'), "/uploads");
           console.log("reg.body : ");
           console.log(req.body);
           categoryAdded = new Category({
             name: req.body.name,
-            icon: req.body.icon,
+            icon: "".concat(originalPath, "/").concat(filename),
             color: req.body.color
           });
           categoryAdded.save().then(function (cat) {
+            console.log('added');
             res.status(201).json({
               message: 'category added sucessfully from res',
-              categoryId: cat._id
+              success: true,
+              category: cat
             });
           })["catch"](function (err) {
             res.status(500).json({
               error: err,
               success: false
             });
-            console.log(err);
           });
 
-        case 4:
+        case 6:
         case "end":
           return _context3.stop();
       }

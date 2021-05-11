@@ -1,7 +1,5 @@
 "use strict";
 
-function _readOnlyError(name) { throw new Error("\"" + name + "\" is read-only"); }
-
 var express = require('express');
 
 var User = require('../models/user');
@@ -12,32 +10,13 @@ var mongoose = require('mongoose');
 
 var bcryptjs = require('bcryptjs');
 
-var jwt = require('jsonwebtoken'); //add new user
-//http://localhost:3000/api/users/register POST
+var jwt = require('jsonwebtoken');
 
-
-router.post('/', function _callee(req, res, next) {
-  var user;
-  return regeneratorRuntime.async(function _callee$(_context) {
+function verifyUser(req, res, next) {
+  return regeneratorRuntime.async(function verifyUser$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          console.log(req.body);
-          user = new User({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            username: req.body.username,
-            token: req.body.token,
-            email: req.body.email,
-            passwordHash: bcryptjs.hashSync(req.body.password, 10),
-            street: req.body.street,
-            apartment: req.body.apartment,
-            zip: req.body.zip,
-            city: req.body.city,
-            country: req.body.country,
-            phone: req.body.phone,
-            isAdmin: req.body.isAdmin
-          });
           User.findOne({
             email: req.body.email
           }).then(function (user) {
@@ -47,30 +26,66 @@ router.post('/', function _callee(req, res, next) {
               error: err
             });
           });
+          next();
 
-          _readOnlyError("user");
+        case 2:
+        case "end":
+          return _context.stop();
+      }
+    }
+  });
+} //add new user
+//http://localhost:3000/api/users/register POST
 
-          _context.next = 6;
-          return regeneratorRuntime.awrap(user.save().then(function (resUser) {
-            if (!resUser) {
-              return res.status(500).send('user cannot be added');
-            } else {
-              return res.status(200).send({
-                user: resUser
-              });
-            }
+
+router.post('/', function _callee(req, res, next) {
+  var newUser;
+  return regeneratorRuntime.async(function _callee$(_context2) {
+    while (1) {
+      switch (_context2.prev = _context2.next) {
+        case 0:
+          console.log(req.body);
+          newUser = new User({
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            username: req.body.username,
+            token: req.body.token,
+            email: req.body.email,
+            passwordHash: bcryptjs.hashSync(req.body.passwordHash, 10),
+            street: req.body.street,
+            apartment: req.body.apartment,
+            zip: req.body.zip,
+            city: req.body.city,
+            country: req.body.country,
+            phone: req.body.phone
+          });
+          _context2.next = 4;
+          return regeneratorRuntime.awrap(User.findOne({
+            email: req.body.email
+          }).then(function (user) {
+            return res.status(400).send({
+              msg: req.body.email + ' is allready exists'
+            });
           })["catch"](function (err) {
-            res.status(500).json({
+            return res.status(400).send({
               error: err
             });
           }));
 
-        case 6:
-          user = _context.sent;
+        case 4:
+          res = _context2.sent;
+          resUser = newUser.save(function (err, doc) {
+            if (err) return console.error(err);else console.log("user inserted succussfully!");
+          });
+          /* if(!resUser){
+              return res.status(500).send('user cannot be added')
+          }else {
+              return res.status(200).send({user : resUser})
+                }  */
 
-        case 7:
+        case 6:
         case "end":
-          return _context.stop();
+          return _context2.stop();
       }
     }
   });
@@ -79,15 +94,15 @@ router.post('/', function _callee(req, res, next) {
 
 router.get('/', function _callee2(req, res) {
   var userList;
-  return regeneratorRuntime.async(function _callee2$(_context2) {
+  return regeneratorRuntime.async(function _callee2$(_context3) {
     while (1) {
-      switch (_context2.prev = _context2.next) {
+      switch (_context3.prev = _context3.next) {
         case 0:
-          _context2.next = 2;
+          _context3.next = 2;
           return regeneratorRuntime.awrap(User.find().select('-passwordHash'));
 
         case 2:
-          userList = _context2.sent;
+          userList = _context3.sent;
 
           if (!userList) {
             res.status(500).json({
@@ -102,7 +117,7 @@ router.get('/', function _callee2(req, res) {
 
         case 4:
         case "end":
-          return _context2.stop();
+          return _context3.stop();
       }
     }
   });
@@ -111,15 +126,15 @@ router.get('/', function _callee2(req, res) {
 
 router.get('/:id', function _callee3(req, res) {
   var userById;
-  return regeneratorRuntime.async(function _callee3$(_context3) {
+  return regeneratorRuntime.async(function _callee3$(_context4) {
     while (1) {
-      switch (_context3.prev = _context3.next) {
+      switch (_context4.prev = _context4.next) {
         case 0:
-          _context3.next = 2;
+          _context4.next = 2;
           return regeneratorRuntime.awrap(User.findById(req.params.id));
 
         case 2:
-          userById = _context3.sent;
+          userById = _context4.sent;
 
           if (!userById) {
             res.status(500).json({
@@ -135,7 +150,7 @@ router.get('/:id', function _callee3(req, res) {
 
         case 4:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
     }
   });
@@ -166,25 +181,25 @@ router["delete"]('/:id', function (req, res) {
 
 router.post('/login', function _callee4(req, res) {
   var user, secret, token;
-  return regeneratorRuntime.async(function _callee4$(_context4) {
+  return regeneratorRuntime.async(function _callee4$(_context5) {
     while (1) {
-      switch (_context4.prev = _context4.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
-          _context4.next = 2;
+          _context5.next = 2;
           return regeneratorRuntime.awrap(User.findOne({
             email: req.body.email
           }));
 
         case 2:
-          user = _context4.sent;
+          user = _context5.sent;
           secret = process.env.SECRET;
 
           if (user) {
-            _context4.next = 6;
+            _context5.next = 6;
             break;
           }
 
-          return _context4.abrupt("return", res.status(200).send({
+          return _context5.abrupt("return", res.status(200).send({
             message: 'The user not found'
           }));
 
@@ -211,7 +226,7 @@ router.post('/login', function _callee4(req, res) {
 
         case 7:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
     }
   });

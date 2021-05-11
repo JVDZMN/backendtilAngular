@@ -16,7 +16,10 @@ var userSchema = mongoose.Schema({
     required: true
   },
   birthday: {
-    type: Date
+    type: Date,
+    "default": function _default() {
+      return new Date(+new Date() + 7 * 24 * 60 * 60 * 1000);
+    }
   },
   email: {
     type: String,
@@ -31,20 +34,24 @@ var userSchema = mongoose.Schema({
     "default": ''
   },
   apartment: {
-    type: String
+    type: String,
+    "default": ''
   },
   zip: {
-    type: String
+    type: String,
+    "default": ''
   },
   city: {
     type: String,
     "default": ''
   },
   country: {
-    type: String
+    type: String,
+    "default": ''
   },
   phone: {
-    type: String
+    type: String,
+    "default": ''
   },
   token: {
     type: String,

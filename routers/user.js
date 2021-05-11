@@ -5,45 +5,51 @@ const mongoose = require('mongoose')
 const bcryptjs = require('bcryptjs')
 const jwt =require('jsonwebtoken')
 
+async function verifyUser(req, res, next) {
+    
+        User.findOne({email : req.body.email}).then(user =>{
+            return res.status(400).send('The user is allready exists')
+         }).catch(err=>{
+            return res.status(500).send({error:err})
+         })
+         next()
+}
+
 //add new user
 //http://localhost:3000/api/users/register POST
 router.post('/',async(req,res,next)=>{
     console.log(req.body)
-    const user= new User({
+
+
+    const newUser= new User({
         firstname:req.body.firstname,
         lastname:req.body.lastname,
         username:req.body.username,
         token:req.body.token,
-        email:req.body.email,
-        
-        passwordHash:bcryptjs.hashSync(req.body.password,10),
+        email:req.body.email, 
+        passwordHash:bcryptjs.hashSync(req.body.passwordHash,10),
         street:req.body.street,
         apartment:req.body.apartment,
         zip:req.body.zip,
         city:req.body.city,
         country:req.body.country,
         phone:req.body.phone,
-        isAdmin:req.body.isAdmin
     })
-     User.findOne({email : req.body.email}).then(user =>{
-        return res.status(400).send('The user is allready exists')
+    res =await User.findOne({email : req.body.email}).then(user =>{
+        return res.status(400).send({msg : req.body.email + ' is allready exists'})
      }).catch(err=>{
-        return res.status(500).send({error:err})
+        return res.status(400).send({error:err})
+     }) 
 
-     })
- 
-    user = await user.save().then(resUser =>{
-        if(!resUser){
+     resUser = newUser.save((err, doc) => {
+        if (err) return console.error(err);
+       else console.log("user inserted succussfully!");
+      })
+        /* if(!resUser){
             return res.status(500).send('user cannot be added')
         }else {
             return res.status(200).send({user : resUser})
-        }
-    }).catch(err => {
-        res.status(500).json({
-            error: err
-        })
-    })
-    
+              }  */
 })
 
 //get all users

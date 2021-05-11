@@ -16,9 +16,6 @@ var multer = require('multer');
 
 var path = require('path');
 
-var _require = require('../models/category'),
-    updateOne = _require.updateOne;
-
 var fileTypes = {
   'image/png': 'png',
   'image/jpeg': 'jpeg',
@@ -52,7 +49,7 @@ var upload = multer({
 }); //add a product
 
 router.post('/', upload.single('image'), function _callee(req, res, next) {
-  var filename, originalPath, category;
+  var filename, originalPath, category, userAdded;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -73,7 +70,9 @@ router.post('/', upload.single('image'), function _callee(req, res, next) {
           _context.next = 8;
           return regeneratorRuntime.awrap(Category.findById(req.body.category).then(function (category) {
             if (!category) {
-              return res.status(500).send('invalid category ');
+              return res.status(500).json({
+                msg: 'invalid category '
+              });
             }
           })["catch"](function (err) {
             console.log(err);
@@ -81,7 +80,7 @@ router.post('/', upload.single('image'), function _callee(req, res, next) {
 
         case 8:
           category = _context.sent;
-          product = new Product({
+          userAdded = new User({
             name: req.body.name,
             description: req.body.description,
             richDescription: req.body.richDescription,
@@ -94,21 +93,42 @@ router.post('/', upload.single('image'), function _callee(req, res, next) {
             numReviews: req.body.numReviews,
             isFeatured: req.body.isFeatured
           });
-          _context.next = 12;
-          return regeneratorRuntime.awrap(product.save().then(function (product) {
-            if (!product) {
-              return res.status(500).send('product cannot be added');
-            } else {
-              return res.send(product);
-            }
+          userAdded.save().then(function (user) {
+            res.status(201).json({
+              message: 'category added sucessfully from res',
+              email: user.email
+            });
           })["catch"](function (err) {
+            res.status(500).json({
+              error: err,
+              success: false
+            });
             console.log(err);
-          }));
+          });
+          /*   product= new Product({
+               name:req.body.name,
+               description : req.body.description,
+               richDescription : req.body.richDescription,
+               image: `${originalPath}/${filename}`,
+               brand:req.body.brand,
+               price:req.body.price,
+               category:req.body.category,
+               countInStock:req.body.countInStock,
+               rating:req.body.rating,
+               numReviews:req.body.numReviews,
+               isFeatured:req.body.isFeatured
+           })
+           product = await product.save().then(product =>{
+               if(!product){
+                   return res.status(500).send('product cannot be added')
+               }else {
+                   return res.send(product)
+               }
+           }).catch(err =>{
+               console.log(err)
+           }) */
 
-        case 12:
-          product = _context.sent;
-
-        case 13:
+        case 11:
         case "end":
           return _context.stop();
       }

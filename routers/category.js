@@ -1,6 +1,39 @@
 const Category = require('../models/category')
 const express = require('express')
 const router = express.Router()
+const multer = require('multer')
+const path=require('path')
+
+
+const fileTypes = {
+    'image/png':'png',
+    'image/jpeg':'jpeg',
+    'image/jpg':'jpg'
+}
+
+const fileFilter=(req,file,cb)=>{
+    const isValid = fileTypes[file.mimetype]
+    if(isValid ) {cb(null,true)}
+    else {cb(null,false)}
+}
+
+ const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, ('uploads/') )
+    },
+    filename: function (req, file, cb) {
+
+      const filename = file.originalname.split(' ').join('-')  
+      const extension = fileTypes[file.mimetype]
+      const now = Date.now().toString()
+      
+      cb(null, `${filename}-${now.replace(/:/g, '-')}.${extension}`)
+    }
+}) 
+
+
+const upload = multer({storage : storage, fileFilter:fileFilter})
+
 
 //get all categories
 router.get('/',async(req, res) =>{
@@ -33,26 +66,36 @@ router.get('/:id',async(req, res)=>{
     })
 
 //create a category
-router.post('/', async(req, res)=>{
+router.post('/', upload.single('image'),async(req, res,next)=>{
+
+    //make a path for public path for image from root
+    const filename = req.file.filename
+    const originalPath = `${req.protocol}://${req.get('host')}/uploads`
+
+
     console.log("reg.body : ")
     console.log(req.body)
+
     const categoryAdded= new Category({
         name:req.body.name,
-        icon:req.body.icon,
+        icon:`${originalPath}/${filename}`,
         color:req.body.color
     })
 
+    
+
     categoryAdded.save().then(cat =>{
+        console.log('added')
         res.status(201).json({
             message:'category added sucessfully from res',
-            categoryId:cat._id
+            success : true,
+            category:cat
         })
     }).catch(err =>{
         res.status(500).json({
             error:err,
             success:false
         })
-        console.log(err)
     })
 })
 

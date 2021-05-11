@@ -6,7 +6,6 @@ const router=express.Router()
 const mongoose = require('mongoose')
 const multer = require('multer')
 const path=require('path')
-const { updateOne } = require('../models/category')
 
 const fileTypes = {
     'image/png':'png',
@@ -52,12 +51,39 @@ router.post('/',upload.single('image'),async(req,res,next)=>{
     console.log(req.file) 
      const category = await Category.findById(req.body.category).then(category =>{
         if(!category){
-            return res.status(500).send('invalid category ')
+            return res.status(500).json({msg:'invalid category '})
         }
     }).catch(err =>{
         console.log(err)
     }) 
-     product= new Product({
+
+    const userAdded= new User({
+        name:req.body.name,
+        description : req.body.description,
+        richDescription : req.body.richDescription,
+        image: `${originalPath}/${filename}`,
+        brand:req.body.brand,
+        price:req.body.price,
+        category:req.body.category,
+        countInStock:req.body.countInStock,
+        rating:req.body.rating,
+        numReviews:req.body.numReviews,
+        isFeatured:req.body.isFeatured
+    })
+
+    userAdded.save().then(user =>{
+        res.status(201).json({
+            message:'category added sucessfully from res',
+            email :user.email
+        })
+    }).catch(err =>{
+        res.status(500).json({
+            error:err,
+            success:false
+        })
+        console.log(err)
+    })
+   /*   product= new Product({
         name:req.body.name,
         description : req.body.description,
         richDescription : req.body.richDescription,
@@ -78,7 +104,7 @@ router.post('/',upload.single('image'),async(req,res,next)=>{
         }
     }).catch(err =>{
         console.log(err)
-    })
+    }) */
     
 })
 //get all products
