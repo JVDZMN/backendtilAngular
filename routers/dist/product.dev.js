@@ -95,7 +95,7 @@ router.post('/', upload.single('image'), function _callee(req, res, next) {
           });
           proAdded.save().then(function (user) {
             res.status(201).json({
-              message: 'product added sucessfully from res',
+              message: 'product added sucessfully',
               email: user.email
             });
           })["catch"](function (err) {
@@ -105,28 +105,6 @@ router.post('/', upload.single('image'), function _callee(req, res, next) {
             });
             console.log(err);
           });
-          /*   product= new Product({
-               name:req.body.name,
-               description : req.body.description,
-               richDescription : req.body.richDescription,
-               image: `${originalPath}/${filename}`,
-               brand:req.body.brand,
-               price:req.body.price,
-               category:req.body.category,
-               countInStock:req.body.countInStock,
-               rating:req.body.rating,
-               numReviews:req.body.numReviews,
-               isFeatured:req.body.isFeatured
-           })
-           product = await product.save().then(product =>{
-               if(!product){
-                   return res.status(500).send('product cannot be added')
-               }else {
-                   return res.send(product)
-               }
-           }).catch(err =>{
-               console.log(err)
-           }) */
 
         case 11:
         case "end":
