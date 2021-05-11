@@ -8,9 +8,14 @@ const jwt =require('jsonwebtoken')
 //add new user
 //http://localhost:3000/api/users/register POST
 router.post('/',async(req,res,next)=>{
+    console.log(req.body)
     const user= new User({
-        name:req.body.name,
+        firstname:req.body.firstname,
+        lastname:req.body.lastname,
+        username:req.body.username,
+        token:req.body.token,
         email:req.body.email,
+        
         passwordHash:bcryptjs.hashSync(req.body.password,10),
         street:req.body.street,
         apartment:req.body.apartment,
@@ -37,12 +42,7 @@ router.post('/',async(req,res,next)=>{
         res.status(500).json({
             error: err
         })
-    }).catch(err => {
-        res.status(500).json({
-            error: err
-        })
     })
-    
     
 })
 

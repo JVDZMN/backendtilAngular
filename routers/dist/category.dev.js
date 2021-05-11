@@ -74,15 +74,17 @@ router.post('/', function _callee3(req, res) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
+          console.log("reg.body : ");
+          console.log(req.body);
           categoryAdded = new Category({
             name: req.body.name,
             icon: req.body.icon,
             color: req.body.color
           });
-          categoryAdded.save().then(function (resault) {
+          categoryAdded.save().then(function (cat) {
             res.status(201).json({
               message: 'category added sucessfully from res',
-              category: resault
+              categoryId: cat._id
             });
           })["catch"](function (err) {
             res.status(500).json({
@@ -92,7 +94,7 @@ router.post('/', function _callee3(req, res) {
             console.log(err);
           });
 
-        case 2:
+        case 4:
         case "end":
           return _context3.stop();
       }

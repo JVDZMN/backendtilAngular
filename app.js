@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path'); 
 require('dotenv').config()
 const app = express();
 const bodyParser = require('body-parser')
@@ -15,11 +16,18 @@ app.use(cors())
 app.options('*',cors())
 
 //To handle HTTP POST requests(middlewares)
+app.use(bodyParser())
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(morgan('tiny'))
 //app.use(authJwt())
 app.use(errorHandler)
+
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")))
+
 
 //models
 const Post = require('./models/post');

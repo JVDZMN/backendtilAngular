@@ -15,6 +15,7 @@ router.get('/',async(req, res) =>{
 
 //get category by id
 router.get('/:id',async(req, res)=>{
+    
     const category = await Category.findById(req.params.id).then(category =>{
         if(!category){
             res.status(500).json({success : false , message:'no category'})
@@ -33,6 +34,8 @@ router.get('/:id',async(req, res)=>{
 
 //create a category
 router.post('/', async(req, res)=>{
+    console.log("reg.body : ")
+    console.log(req.body)
     const categoryAdded= new Category({
         name:req.body.name,
         icon:req.body.icon,
