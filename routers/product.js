@@ -51,7 +51,7 @@ router.post('/',uploadOptions.single('image'),async(req,res,next)=>{
     console.log(fileName)
     const basePath = `${req.protocol}://${req.get('host')}/uploads/imgs/`
     console.log(basePath)
-    const product= new Product({
+    let product= new Product({
         name:req.body.name,
         description : req.body.description,
         ricDescription : req.body.ricDescription,
